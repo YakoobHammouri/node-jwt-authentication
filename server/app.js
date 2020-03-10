@@ -4,7 +4,9 @@ const cookieParser = require('cookie-parser');
 
 const { join } = require('path');
 
-const routes = require('./controllers');
+const errorHandler = require('./controllers/ErrorHandler');
+
+const authRoute = require('./routes/auth');
 
 const app = express();
 
@@ -12,6 +14,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, '..', 'public')));
-app.use(routes);
+app.use('/api/user', authRoute);
+
+app.use(errorHandler.error404);
+app.use(errorHandler.error500);
 
 module.exports = app;
