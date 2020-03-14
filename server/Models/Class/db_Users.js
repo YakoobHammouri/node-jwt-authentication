@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 
+const { v4: uuidv4 } = require('uuid');
+
 const connection = require('./../database/connection');
 
 const queryText = require('./../database/queryText');
@@ -10,7 +12,15 @@ const createUser = async (data) => {
   return new Promise((resolve, reject) => {
     const sql = {
       text: queryText.insertUser,
-      values: [data.name, data.email, hashPassword, data.phone, role],
+      values: [
+        uuidv4(),
+        data.name,
+        data.email,
+        hashPassword,
+        data.phone,
+        role,
+        '0',
+      ],
     };
     connection
       .query(sql.text, sql.values)
@@ -19,12 +29,12 @@ const createUser = async (data) => {
   });
 };
 
-const getUserByEmail = (email) => {
+const getUserByEmail = async (email) => {
+  const sql = {
+    text: queryText.getUserByEmail,
+    values: [email],
+  };
   return new Promise((resplve, reject) => {
-    const sql = {
-      text: queryText.getUserByEmail,
-      values: [email],
-    };
     connection
       .query(sql.text, sql.values)
       .then((result) => {
@@ -35,5 +45,4 @@ const getUserByEmail = (email) => {
       });
   });
 };
-
 module.exports = { createUser, getUserByEmail };
